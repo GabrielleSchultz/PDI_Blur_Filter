@@ -1,10 +1,36 @@
+#===============================================================================
+# Filtro de Blur usando diferentes abordagens
+#-------------------------------------------------------------------------------
+# Universidade Tecnológica Federal do Paraná
+# Alunos: Gabrielle Vercelhese Schultz e Laura Ferraz Pelisson
+#===============================================================================
 
-
-
+import numpy as np
 import cv2
 
+#===============================================================================
+
+#INPUT_IMAGE = ''
 
 def blur_Ingenuo(img):
+    rows = img.shape[0]
+    cols = img.shape[1]
+    
+    for row in range(rows):
+        for col in range(cols):
+            acc = np.zeros(3)
+            count = 0
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    r = row + i
+                    c = col + j
+                    if 0 <= r < rows and 0 <= c < cols:
+                        acc += img[r, c]
+                        count += 1
+            img[row, col] = acc / count
+
+    return img
+            
 
 def blur_Separado(img):
 
