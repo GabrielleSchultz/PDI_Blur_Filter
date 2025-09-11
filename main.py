@@ -10,51 +10,61 @@ import cv2
 
 #===============================================================================
 
-#INPUT_IMAGE = ''
-#WINDOW_SIZE = 3
+INPUT_IMAGE = "Exemplos/a01 - Original.bmp"
+WINDOW_HEIGHT = 13
+WINDOW_WIDTH = 3
 
-def blur_ingenuo(img):
-    rows = img.shape[0]
-    cols = img.shape[1]
+'Versão ingênua do algoritmo de blur'
+'Recebe uma imagem (colorida) e o tamanho dos lados da janela deslizante.'
+'Retorna a imagem recebida borrada'
+
+def blur_ingenuo(img, w, h):
     
     img_out = img.copy()
 
-    for row in range(rows):
-        for col in range(cols):
-            count = 0
-            for i in range(i - WINDOW_SIZE//2,i + WINDOW_SIZE//2):
-                for j in range(j - WINDOW_SIZE//2, j + WINDOW_SIZE//2):
-                     count += img[i, j]
-            img[row, col] = count / (WINDOW_SIZE * WINDOW_SIZE)
+    rows = img.shape[0]
+    cols = img.shape[1]
+    colors = img.shape[2]
+
+    # Percorre a imagem (nos três canais), desconsiderando as bordas
+    for channel in range (colors):
+        for row in range(h//2, rows - (h//2)):
+            for col in range(w//2, cols - (w//2)):
+                soma = 0
+                # Faz a média do pixel com os valores dos vizinhos na janela deslizante
+                for i in range(row - h//2, row + h//2 + 1): 
+                    for j in range(col - w//2, col + w//2 + 1):
+                        soma += img[i, j, channel]
+                img_out[row, col, channel] = soma / (h * w)
     
     return img_out
-            
 
-def blur_separado(img):
-    rows = img.shape[0]
-    cols = img.shape[1]        
+'Versão com filtro separado do algoritmo de blur'
+'Recebe uma imagem (colorida) e o tamanho w dos lados da janela'
+'Retorna a imagem recebida borrada'
 
+#def blur_separado(img):
 
-def blur_integral(img):
+#def blur_integral(img):
 
 
 def main():
 
+    # Leitura da imagem
     img = cv2.imread(INPUT_IMAGE)
 
     if img is None:
         print("Imagem não encontrada em %s" % INPUT_IMAGE)
         return
 
-    # Convert to float32 and normalize to [0, 1]
-    img = img.astype(np.float32) / 255.0
+    # Converte para float
+    img = img.astype(np.float32) / 255
 
-    borrada = blur_ingenuo(img)
+    borrada = blur_ingenuo(img, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    borrada = blur_separado(img)
+    # Salva a imagem de saída (borrada)
+    cv2.imwrite('blur.png', (borrada * 255).astype(np.uint8))
 
-    borrada = blur_integral(img)
-
-    # Save the output image, converting back to [0, 255]
-    cv2.imwrite('blur.png', borrada * 255)
+if __name__ == '__main__':
+    main ()
 
